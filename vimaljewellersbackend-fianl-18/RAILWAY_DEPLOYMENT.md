@@ -1,0 +1,162 @@
+# Vimal Jewellers Backend - Railway Deployment Guide
+
+## 🚀 Deployment Configuration
+
+This backend is configured for deployment on Railway using the `railway.json` configuration file.
+
+## 📋 Prerequisites
+
+Before deploying to Railway, ensure you have:
+
+1. A Railway account (sign up at [railway.app](https://railway.app))
+2. A MySQL database provisioned on Railway or another cloud provider
+3. All required environment variables ready
+
+## 🔧 Required Environment Variables
+
+Set these environment variables in your Railway project:
+
+```env
+# Database Configuration
+DATABASE_HOST=your-database-host
+DATABASE_PORT=3306
+DATABASE_NAME=your-database-name
+DATABASE_USER=your-database-user
+DATABASE_PASSWORD=your-database-password
+DATABASE_SSL=true
+
+# Application Configuration
+NODE_ENV=production
+PORT=7502
+
+# JWT Secret (generate a secure random string)
+JWT_SECRET=your-jwt-secret-key
+
+# Other configurations as needed
+SKIP_DB_SYNC=true
+```
+
+## 📦 Deployment Steps
+
+### Option 1: Deploy via Railway CLI
+
+1. Install Railway CLI:
+   ```bash
+   npm install -g @railway/cli
+   ```
+
+2. Login to Railway:
+   ```bash
+   railway login
+   ```
+
+3. Initialize Railway project:
+   ```bash
+   railway init
+   ```
+
+4. Link to your Railway project:
+   ```bash
+   railway link
+   ```
+
+5. Deploy:
+   ```bash
+   railway up
+   ```
+
+### Option 2: Deploy via GitHub Integration
+
+1. Push your code to GitHub:
+   ```bash
+   git add .
+   git commit -m "Configure for Railway deployment"
+   git push digitalrise main
+   ```
+
+2. In Railway dashboard:
+   - Click "New Project"
+   - Select "Deploy from GitHub repo"
+   - Choose your repository: `digitalrisemarketingrk-wq/vimal-jewels-backend`
+   - Railway will automatically detect the `railway.json` configuration
+
+3. Add environment variables in Railway dashboard under "Variables" tab
+
+4. Deploy!
+
+## 🏗️ Build & Deploy Process
+
+The `railway.json` configuration defines:
+
+- **Build**: Uses NIXPACKS builder with `npm install`
+- **Pre-Deploy**: Runs database migrations via `npm run db:migrate`
+- **Start**: Launches the app with `npm start`
+- **Health Check**: Monitors `/health` endpoint
+- **Restart Policy**: Restarts on failure
+
+## 🔍 Health Check Endpoint
+
+The backend includes a health check endpoint at `/health` that:
+- Verifies database connectivity
+- Returns application status
+- Reports Node.js version
+
+Example response:
+```json
+{
+  "status": "healthy",
+  "database": "connected",
+  "version": "v18.x.x"
+}
+```
+
+## 🗄️ Database Migrations
+
+Migrations are automatically run before each deployment via the `preDeployCommand`.
+
+To run migrations manually:
+```bash
+npm run db:migrate
+```
+
+## 📝 Important Notes
+
+1. **Database Sync**: In production, `SKIP_DB_SYNC` is set to `true` to prevent automatic schema changes
+2. **Migrations**: Always use Sequelize migrations for schema changes in production
+3. **SSL**: Database SSL is enabled for production environments
+4. **Connection Pooling**: Configured for optimal performance with Railway's infrastructure
+
+## 🔗 API Endpoints
+
+Once deployed, your backend will be available at:
+```
+https://your-app-name.up.railway.app
+```
+
+Main endpoints:
+- `GET /` - Welcome message
+- `GET /health` - Health check
+- `POST /api/auth/login` - User authentication
+- `GET /api/products` - Products listing
+- And more...
+
+## 🛠️ Troubleshooting
+
+### Database Connection Issues
+- Verify all DATABASE_* environment variables are set correctly
+- Ensure DATABASE_SSL=true for cloud databases
+- Check that your database allows connections from Railway's IP ranges
+
+### Migration Failures
+- Check migration files in `/migrations` directory
+- Verify database credentials have sufficient permissions
+- Review Railway deployment logs for specific errors
+
+### Application Crashes
+- Check Railway logs for error messages
+- Verify all required environment variables are set
+- Ensure Node.js version matches the requirement (>=18.x)
+
+## 📞 Support
+
+For issues or questions, contact the development team.
