@@ -160,18 +160,23 @@ db.users.sync(syncOptions)
     await seedPages(db);
     await seedSettings(db);
     await seedFooter(db);
-    const server = app.listen(port, () => {
-      console.log(`🚀 Vimal Jewellers Backend running on port ${port} `);
-    });
-
-    // Graceful Shutdown
-    process.on('SIGTERM', () => {
-      console.log('👋 SIGTERM RECEIVED. Shutting down gracefully');
-      server.close(() => {
-        console.log('💥 Process terminated!');
+    if (process.env.NODE_ENV !== 'production' || !process.env.VERCEL) {
+      const server = app.listen(port, () => {
+        console.log(`🚀 Vimal Jewellers Backend running on port ${port} `);
       });
-    });
+
+      // Graceful Shutdown
+      process.on('SIGTERM', () => {
+        console.log('👋 SIGTERM RECEIVED. Shutting down gracefully');
+        server.close(() => {
+          console.log('💥 Process terminated!');
+        });
+      });
+    }
 
   }).catch(err => {
     console.error("Failed to sync database or start server:", err);
   });
+
+export default app;
+
