@@ -23,9 +23,17 @@ router.get("/:id", authenticateToken, async (req, res) => {
   // Get product details for all items (assuming items is an array of product IDs)
   let products = [];
   if (order.items && Array.isArray(order.items) && order.items.length > 0) {
+    const productIds = order.items.map(item => item.productId || item.id || item);
+    const productsData = await db.products.findAll({
+      where: { id: productIds },
+      attributes: ['id', 'name', 'images', 'shortcode', 'price', 'mrp']
+    });
+
+    const productMap = new Map(productsData.map(p => [String(p.id), p]));
+
     for (const item of order.items) {
       const productId = item.productId || item.id || item;
-      const product = await db.products.findOne({ where: { id: productId } });
+      const product = productMap.get(String(productId));
       products.push({
         name: product ? product.name : "Product Not Found",
         image: product ? (Array.isArray(product.images) ? product.images[0] : product.images) : "/placeholder.svg",

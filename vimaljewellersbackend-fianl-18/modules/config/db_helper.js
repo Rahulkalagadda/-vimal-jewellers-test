@@ -39,13 +39,25 @@ const createDatabaseReference = () => {
     {
       host: process.env.DATABASE_HOST || "127.0.0.1",
       dialect: "mysql",
+      port: process.env.DATABASE_PORT || 3306,
+      dialectOptions: {
+        connectTimeout: 10000,
+        ssl: process.env.DATABASE_SSL === 'true' ? {
+          require: true,
+          rejectUnauthorized: false
+        } : undefined
+      },
       pool: {
-        max: 20,
-        min: 5,
-        acquire: 60000,
-        idle: 10000,
+        max: 50,
+        min: 10,
+        acquire: 30000,
+        idle: 20000,
+        evict: 10000
       },
       logging: false,
+      retry: {
+        max: 3
+      }
     }
   );
   // CREATE COMMON DB INSTANCE

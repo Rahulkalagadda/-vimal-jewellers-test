@@ -25,9 +25,6 @@ import settingsRouter from "./routers/settings.js";
 import appointmentsRouter from "./routers/appointments.js";
 import inquiriesRouter from "./routers/inquiries.js";
 import footerConfigRouter from "./routers/footer_config.js";
-import seedPages from "./init_pages.js";
-import seedSettings from "./init_settings.js";
-import seedFooter from "./init_footer.js";
 
 // ... (existing imports)
 
@@ -113,6 +110,16 @@ app.use("/api/inquiries", inquiriesRouter);
 app.use("/api/footer-configs", footerConfigRouter);
 app.use("/api/mega-menu", megaMenuRouter);
 
+// Health Check Endpoint
+app.get("/health", async (req, res) => {
+  try {
+    await db.sequelize.authenticate();
+    res.status(200).json({ status: 'healthy', database: 'connected', version: process.version });
+  } catch (error) {
+    res.status(503).json({ status: 'unhealthy', database: 'disconnected', error: error.message });
+  }
+});
+
 // Root Route
 app.get("/", (req, res) => {
   res.send("Welcome to the Vimal Jewellers Backend!");
@@ -157,16 +164,22 @@ const initDb = async () => {
   try {
     console.log("Checking database connection...");
     // Check if we should sync (usually only in dev or once during setup)
-    if (process.env.SKIP_DB_SYNC !== 'true') {
+    // CRITICAL: DISABLE SYNC IN PRODUCTION TO PREVENT DATA LOSS
+    if (process.env.NODE_ENV !== 'production' && process.env.SKIP_DB_SYNC !== 'true') {
       await db.users.sync(syncOptions);
       await db.home.sync(syncOptions);
       await db.globalMaterials.sync(syncOptions);
       await db.sequelize.sync();
-      await seedPages(db);
-      await seedSettings(db);
-      await seedFooter(db);
-      console.log("Database synced and seeded successfully.");
+      console.log("Database synced successfully.");
+    } else {
+      console.log("Production environment detected or SKIP_DB_SYNC is true. Skipping database sync.");
+      // Use migrations instead
     }
+
+    // Authenticate connection
+    await db.sequelize.authenticate();
+    console.log('Connection has been established successfully.');
+
   } catch (err) {
     console.error("CRITICAL: Database initialization failed:", err.message);
     // We don't throw here to allow the app object to be exported, 
