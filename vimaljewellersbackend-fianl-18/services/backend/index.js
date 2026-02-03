@@ -75,9 +75,10 @@ app.use(compression());
 
 app.use(
   cors({
-    origin: true, // Allow all origins (reflects the request origin)
-    methods: ["GET", "POST", "PUT", "DELETE"],
-    credentials: true,
+    origin: "*", // Allow all origins
+    methods: ["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"],
+    credentials: false, // Must be false when origin is "*"
+    allowedHeaders: ["Content-Type", "Authorization"],
   })
 );
 app.use(express.json({ limit: '10kb' })); // Body limit is 10kb
