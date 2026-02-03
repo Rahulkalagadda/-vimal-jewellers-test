@@ -10,6 +10,7 @@
   "scripts": {
     "start": "node services/backend/index.js",
     "db:migrate": "npx sequelize-cli db:migrate",
+    "db:seed": "node seed_all.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "",
