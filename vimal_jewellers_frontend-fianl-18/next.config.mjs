@@ -10,6 +10,7 @@ const nextConfig = {
     remotePatterns: [
       { protocol: "https", hostname: "www.candere.com" },
       { protocol: "https", hostname: "backend.vimaljewellers.com" },
+      { protocol: "https", hostname: "vimal-jewellers-test-4k3l.vercel.app" },
       { protocol: "https", hostname: "admin.vimaljewellers.com" },
       { protocol: "http", hostname: "localhost" },
       { protocol: "http", hostname: "localhost", port: "7502" },

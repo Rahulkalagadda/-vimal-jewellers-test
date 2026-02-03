@@ -1,7 +1,7 @@
 // lib/api.ts
 // Helper to replace localhost URLs with production URLs
-export const API_URL = process.env.NEXT_PUBLIC_API_URL || "https://backend.vimaljewellers.com/api";
-export const BACKEND_URL = process.env.NEXT_PUBLIC_BACKEND_URL || "https://backend.vimaljewellers.com";
+export const API_URL = process.env.NEXT_PUBLIC_API_URL || "https://vimal-jewellers-test-4k3l.vercel.app/api";
+export const BACKEND_URL = process.env.NEXT_PUBLIC_BACKEND_URL || "https://vimal-jewellers-test-4k3l.vercel.app";
 
 if (!API_URL) {
   console.warn("NEXT_PUBLIC_API_URL is missing in environment variables.");
