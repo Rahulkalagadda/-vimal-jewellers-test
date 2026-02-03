@@ -1,0 +1,5 @@
+DATABASE_USER=root
+DATABASE_PASSWORD=vipin@123
+DATABASE_NAME=vimaljewellers
+PORT=7502
+FRONTEND_URL=https://vimaljewellers.com
