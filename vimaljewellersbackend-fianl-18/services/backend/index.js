@@ -152,31 +152,44 @@ process.on('unhandledRejection', (err) => {
   // process.exit(1); // KEEP ALIVE
 });
 
-db.users.sync(syncOptions)
-  .then(() => db.home.sync(syncOptions))
-  .then(() => db.globalMaterials.sync(syncOptions))
-  .then(() => db.sequelize.sync()) // logic for global sync follows specific tables
-  .then(async () => {
-    await seedPages(db);
-    await seedSettings(db);
-    await seedFooter(db);
-    if (process.env.NODE_ENV !== 'production' || !process.env.VERCEL) {
-      const server = app.listen(port, () => {
-        console.log(`🚀 Vimal Jewellers Backend running on port ${port} `);
-      });
-
-      // Graceful Shutdown
-      process.on('SIGTERM', () => {
-        console.log('👋 SIGTERM RECEIVED. Shutting down gracefully');
-        server.close(() => {
-          console.log('💥 Process terminated!');
-        });
-      });
+// DB Initialization logic with improved error handling for serverless
+const initDb = async () => {
+  try {
+    console.log("Checking database connection...");
+    // Check if we should sync (usually only in dev or once during setup)
+    if (process.env.SKIP_DB_SYNC !== 'true') {
+      await db.users.sync(syncOptions);
+      await db.home.sync(syncOptions);
+      await db.globalMaterials.sync(syncOptions);
+      await db.sequelize.sync();
+      await seedPages(db);
+      await seedSettings(db);
+      await seedFooter(db);
+      console.log("Database synced and seeded successfully.");
     }
+  } catch (err) {
+    console.error("CRITICAL: Database initialization failed:", err.message);
+    // We don't throw here to allow the app object to be exported, 
+    // but actual API calls will fail until the DB is fixed.
+  }
+};
 
-  }).catch(err => {
-    console.error("Failed to sync database or start server:", err);
+// Start initialization
+initDb();
+
+if (process.env.NODE_ENV !== 'production' || !process.env.VERCEL) {
+  const server = app.listen(port, () => {
+    console.log(`🚀 Vimal Jewellers Backend running on port ${port} `);
   });
 
+  process.on('SIGTERM', () => {
+    console.log('👋 SIGTERM RECEIVED. Shutting down gracefully');
+    server.close(() => {
+      console.log('💥 Process terminated!');
+    });
+  });
+}
+
 export default app;
+
 
