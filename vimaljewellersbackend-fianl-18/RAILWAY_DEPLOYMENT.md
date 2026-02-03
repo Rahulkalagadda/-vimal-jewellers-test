@@ -17,24 +17,33 @@ Before deploying to Railway, ensure you have:
 Set these environment variables in your Railway project:
 
 ```env
-# Database Configuration
-DATABASE_HOST=your-database-host
-DATABASE_PORT=3306
-DATABASE_NAME=your-database-name
-DATABASE_USER=your-database-user
-DATABASE_PASSWORD=your-database-password
+# Database Configuration (Aiven MySQL)
+DATABASE_HOST=<your-aiven-mysql-host>
+DATABASE_PORT=<your-database-port>
+DATABASE_NAME=<your-database-name>
+DATABASE_USER=<your-database-user>
+DATABASE_PASSWORD=<your-database-password>
 DATABASE_SSL=true
 
 # Application Configuration
 NODE_ENV=production
 PORT=7502
 
-# JWT Secret (generate a secure random string)
-JWT_SECRET=your-jwt-secret-key
+# Frontend URL
+FRONTEND_URL=https://vimal-jewellers-test.vercel.app/
 
-# Other configurations as needed
+# JWT Secret (generate a secure random string if not already set)
+JWT_SECRET=<your-jwt-secret-key>
+
+# Skip DB Sync in Production
 SKIP_DB_SYNC=true
 ```
+
+**Important Notes:**
+- The database is already deployed on **Aiven Cloud**
+- SSL is **required** for the Aiven MySQL connection
+- Make sure to set `NODE_ENV=production` in Railway (currently set to development in local .env)
+- Copy the actual credentials from your `.env` file when setting up Railway environment variables
 
 ## 📦 Deployment Steps
 
@@ -90,9 +99,9 @@ The `railway.json` configuration defines:
 
 - **Build**: Uses NIXPACKS builder with `npm install`
 - **Pre-Deploy**: Runs database migrations via `npm run db:migrate`
-- **Start**: Launches the app with `npm start`
-- **Health Check**: Monitors `/health` endpoint
-- **Restart Policy**: Restarts on failure
+- **Start**: Launches the app with `node services/backend/index.js`
+- **Health Check**: Monitors `/health` endpoint (timeout: 100ms)
+- **Restart Policy**: Restarts `ON_FAILURE`
 
 ## 🔍 Health Check Endpoint
 
