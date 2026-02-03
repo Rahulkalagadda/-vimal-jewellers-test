@@ -8,5 +8,10 @@
   },
   "author": "SM DIGITAL TECHNOLOGIES",
   "license": "ISC",
-  "description": ""
+  "description": "",
+  "dependencies": {
+    "dotenv": "^17.2.3",
+    "mysql2": "^3.16.2",
+    "sequelize": "^6.37.7"
+  }
 }
