@@ -38,11 +38,11 @@ export default {
             connectTimeout: 10000
         },
         pool: {
-            max: 50,
-            min: 10,
+            max: 10,       // Reduced from 50 (too high for single DB)
+            min: 0,        // Allow closing ALL connections if idle (Fixes "Zombie" connections)
             acquire: 30000,
-            idle: 20000,
-            evict: 10000
+            idle: 10000,   // Close if unused for 10s
+            evict: 5000    // check every 5s
         },
         logging: false,
         retry: {
